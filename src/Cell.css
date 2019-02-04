@@ -1,0 +1,13 @@
+.Cell {
+    display: inline-block;
+    background-color: #ddd;
+    border-right: 1px solid white;
+    border-bottom: 1px solid white;
+    line-height: 10px;
+    height: 10px;
+    width: 10px;
+}
+
+.Cell.active {
+    background-color: #444;
+}

@@ -4,9 +4,13 @@
   "private": true,
   "dependencies": {
     "@types/jest": "23.3.13",
+    "@types/lodash": "^4.14.120",
     "@types/node": "10.12.21",
     "@types/react": "16.8.1",
     "@types/react-dom": "16.0.11",
+    "lodash": "^4.17.11",
+    "mobx": "^5.9.0",
+    "mobx-react": "^5.4.3",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-scripts": "2.1.3",
