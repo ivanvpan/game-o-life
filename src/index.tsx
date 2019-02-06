@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import Board from './Board';
+import './index.scss';
+import Layout from './components/Layout';
 // import * as serviceWorker from './serviceWorker';
 
 import Store from './store'
@@ -9,7 +9,7 @@ import Store from './store'
 const appStore = new Store()
 appStore.init()
 
-ReactDOM.render(<Board store={appStore}/>, document.getElementById('root'));
+ReactDOM.render(<Layout store={appStore}/>, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
