@@ -19,12 +19,22 @@ class Cell extends Component<Props, {}> {
             }
         })
 
-        const style = css(
+        const cellStyle = css(
             styles.cell,
             dynamicSize.size,
-            this.props.cellData.active && styles.active
         )
-        return <div className={style} onClick={() => this.props.store.toggle(this.props.cellData.coords)} />
+
+        const innerCellStyle =css(
+            dynamicSize.size,
+            this.props.cellData.active && styles.activeInnerCell
+        )
+
+        return (
+            <div className={cellStyle} onClick={this.props.cellData.toggle}>
+                <div className={innerCellStyle}>
+                </div>
+            </div>
+        )
     }
 }
 
@@ -40,8 +50,12 @@ const styles = StyleSheet.create({
         borderRight: `1px solid ${styleVars.borderColor}`,
         borderBottom: `1px solid ${styleVars.borderColor}`,
     },
-    active: {
-        backgroundColor: '#8afe91'
+    innerCell: {
+        backgroundColor: 'none'
+    },
+    activeInnerCell: {
+        backgroundColor: '#8afe91',
+        borderRadius: '2px'
     }
 })
 

@@ -5,26 +5,23 @@ import { Coordinates } from './types'
 
 configure({enforceActions: "always"})
 
-
-export type CellData = {
+export class CellData {
     coords: Coordinates
-    active: boolean
+    @observable active: boolean
 
-    /*
     constructor(coords: Coordinates, active = false) {
         this.coords = coords
         this.active = active
     }
 
-    @action toggle() {
+    @action.bound toggle() {
         this.active = !this.active
     }
-    */
 }
 class Store {
-    @observable cellSize = 12
+    @observable cellSize = 13
 
-    boardDimension = 40
+    boardDimension = 80
     boardWidth = this.boardDimension
     boardHeight = this.boardDimension
 
@@ -40,11 +37,7 @@ class Store {
                     x: xPos,
                     y: yPos
                 }
-                // const cellData = new CellData(coords)
-                const cellData = {
-                    coords,
-                    active: false
-                }
+                const cellData = new CellData(coords)
                 row.push(cellData)
             }
             this.boardValues.push(row)

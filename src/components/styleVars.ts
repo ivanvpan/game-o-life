@@ -6,7 +6,7 @@ const colors = {
 }
 
 const variables = {
-    borderColor: colors.darkGray,
+    borderColor: '#2a2a2a',
 
     colors: colors
 }
