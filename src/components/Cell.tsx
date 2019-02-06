@@ -8,6 +8,22 @@ import Store, { CellData } from '../store'
 
 @observer
 class Cell extends Component<Props, {}> {
+    onDragStart = (event: any) => {
+        event.preventDefault();
+    }
+
+    onMouseDown = (event: any) => {
+        if (event.button === 0) {
+            this.props.cellData.toggle()
+        }
+    }
+
+    onMouseOver = (event: any) => {
+        if (event.buttons === 1) {
+            this.props.cellData.activate()
+        }
+    }
+
     render() {
         console.log('rendering cell')
         const size = this.props.store.cellSize
@@ -30,7 +46,10 @@ class Cell extends Component<Props, {}> {
         )
 
         return (
-            <div className={cellStyle} onClick={this.props.cellData.toggle}>
+            <div className={cellStyle}
+                    onDragStart={this.onDragStart}
+                    onMouseDown={this.onMouseDown}
+                    onMouseOver={this.onMouseOver}>
                 <div className={innerCellStyle}>
                 </div>
             </div>
@@ -54,7 +73,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'none'
     },
     activeInnerCell: {
-        backgroundColor: '#8afe91',
+        backgroundColor: styleVars.colors.green,
         borderRadius: '2px'
     }
 })
