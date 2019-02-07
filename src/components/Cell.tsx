@@ -8,6 +8,7 @@ import Store, { CellData } from '../store'
 
 @observer
 class Cell extends Component<Props, {}> {
+    // TODO: real events!
     onDragStart = (event: any) => {
         event.preventDefault();
     }
@@ -25,7 +26,6 @@ class Cell extends Component<Props, {}> {
     }
 
     render() {
-        console.log('rendering cell')
         const size = this.props.store.cellSize
         const dynamicSize = StyleSheet.create({
             size: {

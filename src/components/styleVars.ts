@@ -2,7 +2,8 @@ const colors = {
     black: '#151515',
     lighterBlack: '#222',
     darkGray: '#333',
-    gray: '#aaa',
+    gray: '#888',
+    lightGray: '#ccc',
 
     green: '#8afe91',
     purple: '#cd48fd',

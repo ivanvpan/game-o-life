@@ -2,7 +2,6 @@ import { action, observable, computed, configure } from 'mobx'
 import * as _ from 'lodash'
 
 import { Coordinates } from './types'
-import { SSL_OP_NO_TICKET } from 'constants';
 
 configure({enforceActions: "always"})
 
@@ -36,9 +35,11 @@ export class CellData {
 class Store {
     @observable cellSize = 13
 
-    boardDimension = 10
+    boardDimension = 50
     boardWidth = this.boardDimension
     boardHeight = this.boardDimension
+
+    @observable timer: number|null = null
 
     @observable boardValues: CellData[][] = []
 
@@ -56,6 +57,23 @@ class Store {
                 row.push(cellData)
             }
             this.boardValues.push(row)
+        }
+    }
+
+    @computed get isRunning(): boolean {
+        return this.timer !== null
+    }
+
+    @action.bound start = () => {
+        if (this.timer === null) {
+            this.timer = window.setInterval(this.tick, 500)
+        }
+    }
+
+    @action.bound pause() {
+        if (this.timer !== null) {
+            window.clearInterval(this.timer)
+            this.timer = null
         }
     }
 
@@ -89,7 +107,6 @@ class Store {
 
             return numNeighbors
         }
-        console.log('tick!')
 
         // find the next value for every cell
         forEachCell((cellData) => {

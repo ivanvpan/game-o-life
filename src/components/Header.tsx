@@ -10,9 +10,19 @@ class Header extends Component<Props, {}>  {
     render () {
         return  (
             <div className={css(styles.header)}>
-                <div className={css(styles.section, styles.logoSection)}>life</div>
-                <div className={css(styles.section)} onClick={this.props.store.tick}>S</div>
-                <div className={css(styles.section)}>N</div>
+                <div className={css(styles.logoSection)}>life</div>
+                { this.props.store.isRunning ? (
+                    <div className={css(styles.button, styles.pause)} onClick={this.props.store.pause}>
+                        <span className="typcn typcn-media-pause-outline"></span>
+                    </div>
+                ) : (
+                    <div className={css(styles.button)} onClick={this.props.store.start}>
+                        <span className="typcn typcn-media-play-outline"></span>
+                    </div>
+                )}
+                <div className={css(styles.button)} onClick={this.props.store.tick}>
+                    <span className="typcn typcn-chevron-right-outline"></span>
+                </div>
             </div>
         )
     }
@@ -30,23 +40,25 @@ const styles = StyleSheet.create({
         lineHeight: '60px',
     },
     logoSection: {
+        borderRight: `1px solid ${styleVars.colors.lighterBlack}`,
         color: styleVars.colors.purple,
-        cursor: 'normal',
+        display: 'inline-block',
         fontWeight: 'bold',
         padding: '0 50px',
+    },
+    button: {
+        borderRight: `1px solid ${styleVars.colors.lighterBlack}`,
+        color: styleVars.colors.gray,
+        display: 'inline-block',
+        cursor: 'pointer',
+        padding: '0 15px',
         ':hover': {
-            color: styleVars.colors.purple,
+            color: styleVars.colors.blue,
+            backgroundColor: styleVars.colors.lighterBlack
         }
     },
-    section: {
-        color: styleVars.colors.darkGray,
-        cursor: 'pointer',
-        display: 'inline-block',
-        borderRight: `1px solid ${styleVars.borderColor}`,
-        padding: '0 20px',
-        ':hover': {
-            color: styleVars.colors.yellow,
-        }
+    pause: {
+        color: styleVars.colors.blue,
     }
 })
 
