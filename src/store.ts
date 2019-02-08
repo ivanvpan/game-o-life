@@ -60,6 +60,18 @@ class Store {
         }
     }
 
+    getPosition(coords: Coordinates) {
+        return this.boardValues[coords.y][coords.x]
+    }
+
+    @action toggle(coords: Coordinates) {
+        this.getPosition(coords).toggle()
+    }
+
+    @action activate(coords: Coordinates) {
+        this.getPosition(coords).activate()
+    }
+
     @computed get isRunning(): boolean {
         return this.timer !== null
     }

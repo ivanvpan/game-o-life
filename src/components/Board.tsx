@@ -17,7 +17,7 @@ class Board extends Component<Props, {}>  {
 
       rowValues.forEach((cellData) => {
         const key = `${cellData.coords.x},${cellData.coords.y}`
-        const cell = <Cell cellData={cellData} store={this.props.store} key={key}/>
+        const cell = <Cell coords={cellData.coords} store={this.props.store} key={key}/>
         cells.push(cell)
       })
 

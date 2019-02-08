@@ -5,6 +5,7 @@ import { observer } from 'mobx-react'
 import styleVars from './styleVars'
 import { pxStr } from '../utils/string'
 import Store, { CellData } from '../store'
+import { Coordinates } from '../types'
 
 @observer
 class Cell extends Component<Props, {}> {
@@ -15,13 +16,13 @@ class Cell extends Component<Props, {}> {
 
     onMouseDown = (event: any) => {
         if (event.button === 0) {
-            this.props.cellData.toggle()
+            this.props.store.toggle(this.props.coords)
         }
     }
 
     onMouseOver = (event: any) => {
         if (event.buttons === 1) {
-            this.props.cellData.activate()
+            this.props.store.activate(this.props.coords)
         }
     }
 
@@ -40,9 +41,9 @@ class Cell extends Component<Props, {}> {
             dynamicSize.size,
         )
 
-        const innerCellStyle =css(
+        const innerCellStyle = css(
             dynamicSize.size,
-            this.props.cellData.active && styles.activeInnerCell
+            this.props.store.getPosition(this.props.coords).active && styles.activeInnerCell
         )
 
         return (
@@ -58,7 +59,7 @@ class Cell extends Component<Props, {}> {
 }
 
 interface Props {
-    cellData: CellData
+    coords: Coordinates
     store: Store
 }
 
