@@ -1,6 +1,7 @@
 import React, { Component, ReactComponentElement } from 'react'
 import { StyleSheet, css } from 'aphrodite'
 import { observer } from 'mobx-react'
+import _ from 'lodash'
 
 import styleVars from './styleVars'
 import Cell from './Cell'
@@ -12,21 +13,28 @@ import { pxStr } from '../utils/string'
 class Board extends Component<Props, {}>  {
   render() {
     console.log('rendering board')
-    const rows = this.props.store.boardValues.map((rowValues, rowNumber) => {
-      const cells: ReactComponentElement<any, any>[] = []
-
-      rowValues.forEach((cellData) => {
-        const key = `${cellData.coords.x},${cellData.coords.y}`
-        const cell = <Cell coords={cellData.coords} store={this.props.store} key={key}/>
+    const rows = []
+    for (let yPos of _.range(0, this.props.store.boardHeight)) {
+      const cells = []
+      for (let xPos of _.range(0, this.props.store.boardWidth)) {
+        const key = `${xPos},${yPos}`
+        const coords = { // TODO: make constructor?
+          x: xPos,
+          y: yPos
+        }
+        const cell = <Cell
+          coords={coords}
+          store={this.props.store}
+          key={key}/>
         cells.push(cell)
-      })
+      }
 
-      return  (
-        <div className={css(styles.row)} key={rowNumber}>
+      rows.push(
+        <div className={css(styles.row)} key={yPos}>
           { cells }
         </div>
       )
-    })
+    }
 
     return (
       <div className={css(styles.board)}>

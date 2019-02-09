@@ -8,23 +8,24 @@ import styleVars from './styleVars'
 @observer
 class Header extends Component<Props, {}>  {
     render () {
-        return  (
-            <div className={css(styles.header)}>
-                <div className={css(styles.logoSection)}>life</div>
-                { this.props.store.isRunning ? (
-                    <div className={css(styles.button, styles.pause)} onClick={this.props.store.pause}>
-                        <span className="typcn typcn-media-pause-outline"></span>
-                    </div>
-                ) : (
-                    <div className={css(styles.button)} onClick={this.props.store.start}>
-                        <span className="typcn typcn-media-play-outline"></span>
-                    </div>
-                )}
-                <div className={css(styles.button)} onClick={this.props.store.tick}>
-                    <span className="typcn typcn-chevron-right-outline"></span>
-                </div>
-            </div>
-        )
+    //     return  (
+    //         <div className={css(styles.header)}>
+    //             <div className={css(styles.logoSection)}>life</div>
+    //             { this.props.store.isRunning ? (
+    //                 <div className={css(styles.button, styles.pause)} onClick={this.props.store.pause}>
+    //                     <span className="typcn typcn-media-pause-outline"></span>
+    //                 </div>
+    //             ) : (
+    //                 <div className={css(styles.button)} onClick={this.props.store.start}>
+    //                     <span className="typcn typcn-media-play-outline"></span>
+    //                 </div>
+    //             )}
+    //             <div className={css(styles.button)} onClick={this.props.store.tick}>
+    //                 <span className="typcn typcn-chevron-right-outline"></span>
+    //             </div>
+    //         </div>
+    //     )
+        return <div/>
     }
 }
 

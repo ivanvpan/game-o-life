@@ -2,36 +2,18 @@ import { action, observable, computed, configure } from 'mobx'
 import * as _ from 'lodash'
 
 import { Coordinates } from './types'
+import { runInThisContext } from 'vm';
 
 configure({enforceActions: "always"})
 
 export class CellData {
     coords: Coordinates
-    @observable active: boolean
-    nextValue: boolean
 
     constructor(coords: Coordinates, active = false) {
         this.coords = coords
-        this.active = active
-        this.nextValue = false
-    }
-
-    @action.bound toggle() {
-        this.active = !this.active
-    }
-
-    @action.bound activate() {
-        this.active = true
-    }
-
-    @action.bound setNextValue(value: boolean) {
-        this.nextValue = value
-    }
-
-    @action.bound tick() {
-        this.active = this.nextValue
     }
 }
+
 class Store {
     @observable cellSize = 13
 
@@ -41,37 +23,45 @@ class Store {
 
     @observable timer: number|null = null
 
-    @observable boardValues: CellData[][] = []
+    // @observable boardValues: Map<number, Map<number, CellData>> = new Map()
+    @observable boardValues: Map<number, Map<number, true>> = new Map()
 
     @action init() {
-        this.boardValues.length = 0
-
-        for (let yPos of _.range(0, this.boardHeight)) {
-            const row = []
-            for (let xPos of _.range(0, this.boardWidth)) {
-                const coords: Coordinates = {
-                    x: xPos,
-                    y: yPos
-                }
-                const cellData = new CellData(coords)
-                row.push(cellData)
-            }
-            this.boardValues.push(row)
-        }
+        this.boardValues.clear()
     }
 
-    getPosition(coords: Coordinates) {
-        return this.boardValues[coords.y][coords.x]
+    @observable isAlive(coords: Coordinates) {
+        const row = this.boardValues.get(coords.y)
+        return (!!row) && row.has(coords.x)
     }
 
     @action toggle(coords: Coordinates) {
-        this.getPosition(coords).toggle()
+        // this.dieOrBirth(coords, this.isAlive(coords))
+        this.dieOrBirth(coords, false)
     }
 
-    @action activate(coords: Coordinates) {
-        this.getPosition(coords).activate()
+    @action dieOrBirth(coords: Coordinates, die: boolean) {
+        let row = this.boardValues.get(coords.y)
+
+        if (die) {
+            if (!row) {
+                return
+            } else {
+                row.delete(coords.x)
+                if (row.size < 1) {
+                    this.boardValues.delete(coords.y)
+                }
+            }
+        } else {
+            if (!row) {
+                row = observable(new Map())
+                this.boardValues.set(coords.y, row)
+            }
+            row.set(coords.x, true)
+        }
     }
 
+    /*
     @computed get isRunning(): boolean {
         return this.timer !== null
     }
@@ -136,6 +126,7 @@ class Store {
             cellData.tick()
         })
     }
+    */
 }
 
 export default Store

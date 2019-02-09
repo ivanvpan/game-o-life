@@ -22,7 +22,7 @@ class Cell extends Component<Props, {}> {
 
     onMouseOver = (event: any) => {
         if (event.buttons === 1) {
-            this.props.store.activate(this.props.coords)
+            this.props.store.dieOrBirth(this.props.coords, false)
         }
     }
 
@@ -43,7 +43,7 @@ class Cell extends Component<Props, {}> {
 
         const innerCellStyle = css(
             dynamicSize.size,
-            this.props.store.getPosition(this.props.coords).active && styles.activeInnerCell
+            this.props.store.isAlive(this.props.coords) && styles.activeInnerCell
         )
 
         return (
