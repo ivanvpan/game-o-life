@@ -37,7 +37,7 @@ class Store {
 
     @action toggle(coords: Coordinates) {
         // this.dieOrBirth(coords, this.isAlive(coords))
-        this.dieOrBirth(coords, false)
+        this.dieOrBirth(coords, this.isAlive(coords))
     }
 
     @action dieOrBirth(coords: Coordinates, die: boolean) {
@@ -61,7 +61,6 @@ class Store {
         }
     }
 
-    /*
     @computed get isRunning(): boolean {
         return this.timer !== null
     }
@@ -80,10 +79,10 @@ class Store {
     }
 
     @action.bound tick() {
-        const forEachCell = (cb: (cellData: CellData) => void): void => {
-            for (let row of this.boardValues) {
-                for (let cellData of row) {
-                    cb(cellData)
+        const forEachAliveCell = (cb: (coords: Coordinates) => void): void => {
+            for (let [y, row] of this.boardValues) {
+                for (let [x, _] of row) {
+                    cb({x, y})
                 }
             }
         }
@@ -101,7 +100,7 @@ class Store {
                     if (x < 0 || x > this.boardWidth - 1) continue
                     if (y < 0 || y > this.boardHeight - 1) continue
 
-                    if (this.boardValues[y][x].active) {
+                    if (this.isAlive({x, y})) {
                         numNeighbors++
                     }
                 }
@@ -110,23 +109,29 @@ class Store {
             return numNeighbors
         }
 
+        let toDie = new Set<Coordinates>()
+        let toLive = new Set<Coordinates>()
+
         // find the next value for every cell
-        forEachCell((cellData) => {
-            const coords = cellData.coords
+        forEachAliveCell((coords) => {
             let numNeighbors = countNeighbors(coords)
-            if (cellData.active) {
-                cellData.setNextValue(numNeighbors === 3 || numNeighbors === 2)
+
+            if (numNeighbors === 2 || numNeighbors === 3) {
+                toLive.add(coords)
             } else {
-                cellData.setNextValue(numNeighbors === 3)
+                toDie.add(coords)
             }
         })
 
-        // set the next value to the current value
-        forEachCell((cellData) => {
-            cellData.tick()
-        })
+        // Save results
+        for (let live of toLive) {
+            this.dieOrBirth(live, false)
+        }
+
+        for (let die of toDie) {
+            this.dieOrBirth(die, true)
+        }
     }
-    */
 }
 
 export default Store
