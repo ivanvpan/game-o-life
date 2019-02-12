@@ -17,7 +17,7 @@ export class CellData {
 class Store {
     @observable cellSize = 13
 
-    boardDimension = 50
+    boardDimension = 20
     boardWidth = this.boardDimension
     boardHeight = this.boardDimension
 
@@ -68,11 +68,13 @@ class Store {
     @action.bound start = () => {
         if (this.timer === null) {
             this.timer = window.setInterval(this.tick, 500)
+            console.log('starting timer', this.timer)
         }
     }
 
     @action.bound pause() {
-        if (this.timer !== null) {
+        console.log('pausing', this.timer)
+        if (this.timer) {
             window.clearInterval(this.timer)
             this.timer = null
         }
@@ -87,9 +89,7 @@ class Store {
             }
         }
 
-        const countNeighbors = (coords: Coordinates): number => {
-            let numNeighbors = 0
-
+        const forEachNeighbor = (coords: Coordinates, cb: (coords: Coordinates) => void) => {
             for (let yOffset of _.range(-1,2)) {
                 for (let xOffset of _.range(-1, 2)) {
                     if (yOffset === 0 && xOffset === 0) continue
@@ -97,24 +97,27 @@ class Store {
                     const x = coords.x + xOffset
                     const y = coords.y + yOffset
 
-                    if (x < 0 || x > this.boardWidth - 1) continue
-                    if (y < 0 || y > this.boardHeight - 1) continue
-
-                    if (this.isAlive({x, y})) {
-                        numNeighbors++
-                    }
+                    cb({x, y})
                 }
             }
-
-            return numNeighbors
         }
 
         let toDie = new Set<Coordinates>()
         let toLive = new Set<Coordinates>()
 
+        let deadNeighbors = new Set<string>()
+
         // find the next value for every cell
         forEachAliveCell((coords) => {
-            let numNeighbors = countNeighbors(coords)
+            let numNeighbors = 0
+
+            forEachNeighbor(coords, (coords) => {
+                if (this.isAlive(coords)) {
+                    numNeighbors++
+                } else {
+                    deadNeighbors.add(`${coords.x} ${coords.y}`)
+                }
+            })
 
             if (numNeighbors === 2 || numNeighbors === 3) {
                 toLive.add(coords)
@@ -122,6 +125,23 @@ class Store {
                 toDie.add(coords)
             }
         })
+
+        // check non-live cells
+        for (let deadCell of deadNeighbors) {
+            let [xStr, yStr] = deadCell.split(' ')
+            let coords = {x: Number(xStr), y: Number(yStr)}
+            let numNeighbors = 0
+
+            forEachNeighbor(coords, (coords) => {
+                if (this.isAlive(coords)) {
+                    numNeighbors++
+                }
+            })
+
+            if (numNeighbors === 3) {
+                toLive.add(coords)
+            }
+        }
 
         // Save results
         for (let live of toLive) {
