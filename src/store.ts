@@ -21,6 +21,56 @@ class Store {
     boardWidth = this.boardDimension
     boardHeight = this.boardDimension
 
+    @observable worldTopLeft: Coordinates = {x: -(this.boardWidth / 2), y: -(this.boardHeight / 2)}
+
+    dragStartScreenCoords: Coordinates|null = null
+    currentDragScreenCoords: Coordinates|null = null
+
+    @computed get dragging() {
+        return !!this.dragStartScreenCoords
+    }
+
+    @computed get dragOffset() {
+        if (!this.dragStartScreenCoords || !this.currentDragScreenCoords) {
+            return {
+                x: 0,
+                y: 0
+            }
+        }
+
+        const toCellPosition = (coord: number) => Math.ceil(coord / this.cellSize)
+
+        return {
+            x: toCellPosition(this.currentDragScreenCoords.x - this.dragStartScreenCoords.x),
+            y: toCellPosition(this.currentDragScreenCoords.y - this.dragStartScreenCoords.y),
+        }
+    }
+
+    @action startDragging(screenCoords: Coordinates) {
+        if (!this.dragging) {
+            this.dragStartScreenCoords = screenCoords
+            this.currentDragScreenCoords = screenCoords
+        } else {
+            console.error('Error: double drag start')
+        }
+    }
+
+    @action updateDragCoords(screenCoords: Coordinates) {
+        if  (this.dragging) {
+            this.currentDragScreenCoords = screenCoords
+        }
+    }
+
+    @action stopDragging() {
+        if  (this.dragging) {
+            this.dragStartScreenCoords = null
+            this.currentDragScreenCoords = null
+        }
+    }
+
+    @action updateDragPosition(screenCoords: Coordinates) {
+    }
+
     @observable timer: number|null = null
 
     // @observable boardValues: Map<number, Map<number, CellData>> = new Map()

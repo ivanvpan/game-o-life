@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, DragEvent, MouseEvent } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import { observer } from 'mobx-react'
 
@@ -9,19 +9,18 @@ import { Coordinates } from '../types'
 
 @observer
 class Cell extends Component<Props, {}> {
-    // TODO: real events!
-    onDragStart = (event: any) => {
+    onDragStart = (event: DragEvent) => {
         event.preventDefault();
     }
 
-    onMouseDown = (event: any) => {
-        if (event.button === 0) {
+    onMouseDown = (event: MouseEvent) => {
+        if (event.button === 0 && !event.ctrlKey) {
             this.props.store.toggle(this.props.coords)
         }
     }
 
-    onMouseOver = (event: any) => {
-        if (event.buttons === 1) {
+    onMouseOver = (event: MouseEvent) => {
+        if (event.buttons === 1 && ! this.props.store.dragging) {
             this.props.store.dieOrBirth(this.props.coords, false)
         }
     }
