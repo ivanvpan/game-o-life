@@ -1,4 +1,4 @@
-import { action, observable, computed, configure } from 'mobx'
+import { action, observable, computed, configure, intercept } from 'mobx'
 import * as _ from 'lodash'
 
 import { Coordinates } from './types'
@@ -17,32 +17,52 @@ export class CellData {
 class Store {
     @observable cellSize = 13
 
-    boardDimension = 20
+    boardDimension = 30
     boardWidth = this.boardDimension
     boardHeight = this.boardDimension
 
-    @observable worldTopLeft: Coordinates = {x: -(this.boardWidth / 2), y: -(this.boardHeight / 2)}
+    topLeftWithoutDrag: Coordinates = {x: -(this.boardWidth / 2), y: -(this.boardHeight / 2)}
 
-    dragStartScreenCoords: Coordinates|null = null
-    currentDragScreenCoords: Coordinates|null = null
+    @computed get topLeftCoordinate(): Coordinates {
+        return {
+            x: this.topLeftWithoutDrag.x + this.dragOffset.x,
+            y: this.topLeftWithoutDrag.y + this.dragOffset.y
+        }
+    }
+
+    @observable dragStartScreenCoords: Coordinates|null = null
+    @observable currentDragScreenCoords: Coordinates|null = null
 
     @computed get dragging() {
         return !!this.dragStartScreenCoords
     }
 
-    @computed get dragOffset() {
+    @observable dragOffset: Coordinates = {x: 0, y: 0}
+
+    @action updateDragOffset() {
         if (!this.dragStartScreenCoords || !this.currentDragScreenCoords) {
-            return {
+            console.log('do not update drag offset')
+            this.dragOffset = {
                 x: 0,
                 y: 0
             }
-        }
+        } else {
+            console.log('update drag offset')
+            const toCellPosition = (coord: number) => {
+                const pos = coord / this.cellSize
+                const rounded = pos < 0 ? Math.ceil(pos) : Math.floor(pos)
+                return -(rounded) // negate because we need to move origin opposite of the offset
+            }
 
-        const toCellPosition = (coord: number) => Math.ceil(coord / this.cellSize)
+            const newOffset = {
+                x: toCellPosition(this.currentDragScreenCoords.x - this.dragStartScreenCoords.x),
+                y: toCellPosition(this.currentDragScreenCoords.y - this.dragStartScreenCoords.y),
+            }
 
-        return {
-            x: toCellPosition(this.currentDragScreenCoords.x - this.dragStartScreenCoords.x),
-            y: toCellPosition(this.currentDragScreenCoords.y - this.dragStartScreenCoords.y),
+            if (newOffset.x !== this.dragOffset.x || newOffset.y !== this.dragOffset.y) {
+                this.dragOffset.x = newOffset.x
+                this.dragOffset.y = newOffset.y
+            }
         }
     }
 
@@ -50,25 +70,29 @@ class Store {
         if (!this.dragging) {
             this.dragStartScreenCoords = screenCoords
             this.currentDragScreenCoords = screenCoords
+            this.updateDragOffset()
         } else {
             console.error('Error: double drag start')
         }
     }
 
     @action updateDragCoords(screenCoords: Coordinates) {
-        if  (this.dragging) {
+        if (this.dragging) {
             this.currentDragScreenCoords = screenCoords
+            this.updateDragOffset()
+
+            // console.log('dragOffset', this.dragOffset)
+            //console.log('update dragging', this.dragStartScreenCoords, this.currentDragScreenCoords)
         }
     }
 
     @action stopDragging() {
         if  (this.dragging) {
+            this.topLeftWithoutDrag = this.topLeftCoordinate
             this.dragStartScreenCoords = null
             this.currentDragScreenCoords = null
+            this.updateDragOffset()
         }
-    }
-
-    @action updateDragPosition(screenCoords: Coordinates) {
     }
 
     @observable timer: number|null = null
@@ -78,6 +102,14 @@ class Store {
 
     @action init() {
         this.boardValues.clear()
+
+        intercept(this, 'dragOffset', (change) => {
+            if (change.newValue.x === change.newValue.x && change.newValue.y === change.newValue.y) {
+                return null
+            }
+
+            return change
+        })
     }
 
     @observable isAlive(coords: Coordinates) {

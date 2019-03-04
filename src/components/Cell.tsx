@@ -14,13 +14,15 @@ class Cell extends Component<Props, {}> {
     }
 
     onMouseDown = (event: MouseEvent) => {
-        if (event.button === 0 && !event.ctrlKey) {
+        const LEFT_MOUSE_BUTTON = 0
+        if (event.button === LEFT_MOUSE_BUTTON && !event.ctrlKey) {
             this.props.store.toggle(this.props.coords)
         }
     }
 
     onMouseOver = (event: MouseEvent) => {
-        if (event.buttons === 1 && ! this.props.store.dragging) {
+        const LEFT_MOUSE_BUTTON_PRESSED = 1
+        if (event.buttons === LEFT_MOUSE_BUTTON_PRESSED && ! this.props.store.dragging) {
             this.props.store.dieOrBirth(this.props.coords, false)
         }
     }

@@ -26,8 +26,6 @@ class Board extends Component<Props, {}>  {
     if (this.props.store.dragging) {
       const coords: Coordinates = { x, y }
       this.props.store.updateDragCoords(coords)
-      // console.log('update dragging', this.props.store.dragStartScreenCoords, this.props.store.currentDragScreenCoords)
-      console.log('update dragging', this.props.store.dragOffset)
     }
   }, 200)
 
@@ -52,7 +50,7 @@ class Board extends Component<Props, {}>  {
   render() {
     console.log('rendering board')
     const rows = []
-    const worldTopLeft = this.props.store.worldTopLeft
+    const worldTopLeft = this.props.store.topLeftCoordinate
     for (let yPos of _.range(worldTopLeft.y, worldTopLeft.y + this.props.store.boardHeight)) {
       const cells = []
       for (let xPos of _.range(worldTopLeft.x, worldTopLeft.x + this.props.store.boardWidth)) {
@@ -76,7 +74,7 @@ class Board extends Component<Props, {}>  {
     }
 
     return (
-      <div className={css(styles.board)}
+      <div className={css(styles.board, this.props.store.dragging ? styles.dragging : null)}
           onMouseDown={this.onMouseDown}
           onMouseMove={this.onMouseMove}
           onMouseUp={this.onMouseUp}
@@ -94,6 +92,9 @@ interface Props {
 const styles = StyleSheet.create({
   board: {
     backgroundColor: styleVars.colors.lighterBlack
+  },
+  dragging: {
+    cursor: 'grabbing'
   },
   row: {
     lineHeight: '0px',
